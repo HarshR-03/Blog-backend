@@ -9,4 +9,6 @@ urlpatterns = [
     path("login/",v.userLoginView.as_view(),name='login'),
     path("blogs/",v.viewAndCreatePosts.as_view()),
     path("blogs/<int:pk>/",v.viewAndCreatePosts.as_view()),
+    path("update/<int:pk>/",v.updatePostView.as_view()),
+    path("delete/<int:pk>/",v.deletePostView.as_view()),
 ]

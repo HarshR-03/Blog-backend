@@ -10,6 +10,8 @@ from rest_framework import status
 from .models import Post
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import JSONParser 
+from .permissions import IsOwnerOrReadOnly
+# from corsheaders.decorators import cors_exempt, cors_decorator
 
 # Create your views here.
 class helloWorldView(APIView):
@@ -22,6 +24,7 @@ class signUpView(generics.CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [AllowAny,]
 
+# @cors_exempt
 class userLoginView(APIView):
     def post(self,req):
         print(req.data['username'])
@@ -65,5 +68,19 @@ class viewAndCreatePosts(generics.ListAPIView):
             return JsonResponse(serializer.data, status=status.HTTP_200_OK)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class deletePostView(generics.DestroyAPIView):
+    authentication_classes = [TokenAuthentication,]
+    permission_classes = [IsOwnerOrReadOnly]
+    queryset = Post.objects.all()
+    serializer_class = PostDetailSerializer
+    lookup_field = 'pk'
+    
+    def perform_destroy(self, instance):
+        super().perform_destroy(instance)
 
-
+class updatePostView(generics.UpdateAPIView):
+    authentication_classes = [TokenAuthentication,]
+    permission_classes = [IsOwnerOrReadOnly]
+    queryset = Post.objects.all()
+    serializer_class = PostDetailSerializer
+    lookup_field = 'pk'
